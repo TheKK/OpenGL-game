@@ -58,7 +58,8 @@ SDL_Surface* loadImage ( string fileName )
 		return NULL;
 	}
 
-	SDL_SetColorKey( optimized, SDL_SRCCOLORKEY, SDL_MapRGB( optimized->format, 0x00, 0xFF, 0xFF ) );
+	SDL_SetColorKey( optimized, SDL_SRCCOLORKEY,
+		SDL_MapRGB( optimized->format, 0x00, 0xFF, 0xFF ) );
 
 	return optimized;
 }
@@ -75,19 +76,23 @@ void gameStartScreen()
 
 	Timer fps;
 	short int frameCount = 0;
-	short int alpha = 5;
-
-	SDL_FillRect( screen, &screen->clip_rect, SDL_MapRGB( screen->format, 0xFF, 0xFF, 0xFF ) );
+	short int alpha = SDL_ALPHA_TRANSPARENT;
 
 	do{
 		fps.start();
+		
+		//Fill the background with white color	
+		SDL_FillRect( screen, &screen->clip_rect,
+			SDL_MapRGB( screen->format, 0xFF, 0xFF, 0xFF ) );
 	
-		if( frameCount <= 60 )
-			alpha += 255 / 60;
+		//fade in and fade out animation	
+		if( frameCount <= 60 && alpha <= SDL_ALPHA_OPAQUE )
+			alpha += SDL_ALPHA_OPAQUE / 60;
 
-		if( frameCount >= 70 );
+		else if( frameCount >= 180 && alpha >= SDL_ALPHA_TRANSPARENT )
 			alpha -= SDL_ALPHA_OPAQUE / 60;
-	
+		
+		//set the alpha
 		SDL_SetAlpha( logo, SDL_SRCALPHA, alpha );
 
 		applySurface( ( SCREEN_WIDTH - logo->w )/2, ( SCREEN_HEIGHT - logo->h )/2,
@@ -98,7 +103,7 @@ void gameStartScreen()
 		if( fps.getTicks() < 1000 / FPS )
 			SDL_Delay( ( 1000 / FPS ) - fps.getTicks() );
 
-	}while( frameCount++ < FPS * 5 );
+	}while( frameCount++ < FPS * 4 );
 
 	SDL_FreeSurface( logo );
 	SDL_FreeSurface( background );
