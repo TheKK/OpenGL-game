@@ -3,20 +3,20 @@ main.cpp
 */
 #include <cstdio>
 #include <iostream>
+#include "basicFunctions.h"
 #include "timer.h"
+#include "gameMenu.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
 using namespace std;
-
+/*
 #define SCREEN_WIDTH	1280
 #define SCREEN_HEIGHT	720
 #define SCREEN_BPP	32
 #define FPS		60
-
+*/
 SDL_Surface* screen = NULL;
-SDL_Surface* background = NULL;
-SDL_Event  event;
 
 bool init ()
 {
@@ -32,7 +32,7 @@ bool init ()
 
 	return true;
 }
-
+/*
 void applySurface ( int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip = NULL )
 {
 	//Create offset
@@ -63,14 +63,14 @@ SDL_Surface* loadImage ( string fileName )
 
 	return optimized;
 }
-
+*/
 void cleanUp()
 {
-	SDL_FreeSurface( background );
 }
 
 void gameStartScreen()
 {
+	SDL_Event event;
 	SDL_Surface* logo = loadImage( "./game/img/logo.png" );
 	if( logo == NULL )	exit( 1 );
 
@@ -81,6 +81,17 @@ void gameStartScreen()
 	do{
 		fps.start();
 		
+		//Event handle		
+		while( SDL_PollEvent( &event ) ){
+			if( event.type == SDL_KEYDOWN ){
+				if( event.key.keysym.sym == SDLK_RETURN ||
+					event.key.keysym.sym == SDLK_ESCAPE ){
+					
+					frameCount = FPS * 4;	
+				}
+			}
+		}	
+
 		//Fill the background with white color	
 		SDL_FillRect( screen, &screen->clip_rect,
 			SDL_MapRGB( screen->format, 0xFF, 0xFF, 0xFF ) );
@@ -103,17 +114,13 @@ void gameStartScreen()
 		if( fps.getTicks() < 1000 / FPS )
 			SDL_Delay( ( 1000 / FPS ) - fps.getTicks() );
 
-	}while( frameCount++ < FPS * 4 );
+	}while( ++frameCount < FPS * 4 );
 
 	SDL_FreeSurface( logo );
-	SDL_FreeSurface( background );
 }
  
 int main ( int argc, char* argv[] )
 {
-	bool quit = false;
-	Timer fps;
-
 	if( init() == false ){
 		perror( "Initialization faled" );
 		return 1;
@@ -121,19 +128,7 @@ int main ( int argc, char* argv[] )
 
 	gameStartScreen();
 
-	while( quit == false ){
-		fps.start();
-
-		while( SDL_PollEvent( &event ) ){
-			if( event.type == SDL_QUIT )	quit = true;
-		}
-	
-		SDL_FillRect( screen, &screen->clip_rect, SDL_MapRGB( screen->format, 0xFF, 0xB3, 0x5C ) );
-		if( SDL_Flip( screen ) == -1 )		return 1;
-
-		if( fps.getTicks() < 1000 / FPS )	
-			SDL_Delay( ( 1000 / FPS ) - fps.getTicks() );
-	}
+	if( gameMenu( screen ) == 1 )	return 1;
 	
 	//Clean surface and something else
 	cleanUp();
