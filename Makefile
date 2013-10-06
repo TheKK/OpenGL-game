@@ -1,13 +1,18 @@
 CXX = g++
 CXXFLAG = -Wall 
 
-SRC = $(PWD)/main.cpp timer.cpp
+SRC = $(PWD)/src/*.cpp
 OBJ = main.o timer.o
+INCLUDE = -I $(PWD)/include
 LIBS = -lSDL -lSDL_image -lSDL_ttf -lSDL_mixer
 
 OUT_EXE = snake
 
+.SUFFIXS:
+.SUFFIXS: .o .cpp .h
 
-$(OUT_EXE) : $(OBJ)
-	$(CXX) $(CXXFLAG) -g -o $@ $(SRC) $(LIBS)
+$(OUT_EXE): $(OBJ)
+	$(CXX) $(SRC) $(CXXFLAG) $(INCLUDE) $(LIBS) -g -o $@
 
+%.o: $(PWD)/src/%.cpp 
+	$(CXX) $< $(CXXFLAG) $(INCLUDE) $(LIBS) -c
