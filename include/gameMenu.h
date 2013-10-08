@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include "basicFunctions.h"
 #include "timer.h"
 

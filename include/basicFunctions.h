@@ -3,6 +3,8 @@
 
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
+#include <ctime>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
