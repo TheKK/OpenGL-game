@@ -1,33 +1,31 @@
+/*
+basicFunctions.cpp
+*/
 
 #include "basicFunctions.h"
 
-void applySurface ( int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip )
-{
-	//Create offset
-	SDL_Rect offset;
-	offset.x = x;
-	offset.y = y;
-
-	SDL_BlitSurface( source, clip, destination, &offset );
-}
-
-SDL_Surface* loadImage ( string fileName )
+SDL_Texture* loadTexture ( string fileName, SDL_Renderer* renderer )
 {
 	//Create two surface for oringinal and optimized image
-	SDL_Surface* oringinal = NULL;
-	SDL_Surface* optimized = NULL;
+	SDL_Surface* loaded = NULL;
+	SDL_Texture* tex = NULL;
 
-	oringinal = IMG_Load( fileName.c_str() ); 
-	if( oringinal == NULL )		return NULL;
-
-	optimized = SDL_DisplayFormat( oringinal );
-	if( optimized == NULL ){
-		SDL_FreeSurface( oringinal );	
-		return NULL;
+	//Load original picture	
+	loaded = SDL_LoadBMP( fileName.c_str() ); 
+	if( loaded == NULL ){
+		cout << "Error while loading:" << fileName << " Error: " << SDL_GetError() << endl;
+		tex = NULL;
+	}
+	else{
+		//Set color key
+		SDL_SetColorKey( loaded, SDL_TRUE, SDL_MapRGB( loaded->format, 0X00, 0XFF, 0XFF ) );
+		
+		//Covert surface into texture
+		tex = SDL_CreateTextureFromSurface( renderer, loaded );
+		
+		SDL_FreeSurface( loaded );
+		loaded = NULL;
 	}
 
-	SDL_SetColorKey( optimized, SDL_SRCCOLORKEY,
-		SDL_MapRGB( optimized->format, 0x00, 0xFF, 0xFF ) );
-
-	return optimized;
+	return tex;
 }
