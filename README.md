@@ -16,3 +16,5 @@ With this chance, I'll learn how to use git to manage my program version.
 - other game map
 
 TheKK- 2013/10/4
+
+testing by mike
